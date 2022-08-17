@@ -1,5 +1,5 @@
 "use strict";
-// const sample = require('lodash.sample');
+let sample = require('lodash.sample');
 
 /** Textual markov chain generator. */
 
@@ -34,18 +34,22 @@ class MarkovMachine {
     let chains = new Map();
 
     for (let i = 0; i < this.words.length; i++) {
-      if (this.words[i + 1] === undefined) {
-        this.words[i + 1] = null;
-      }
-      if (!chains.has(this.words[i])) {
-        chains.set(this.words[i], [this.words[i + 1]]);
+      let word = this.words[i]
+      let nextWord = this.words[i+1] || null
+
+      // if (this.words[i + 1] === undefined) {
+      //   this.words[i + 1] = null;
+      // }
+
+      if (chains.has(word)) {
+        chains.get(word).push(nextWord)
       }
       else {
-        chains.get(this.words[i]).push(this.words[i + 1]);
+        chains.set(word, [nextWord])
       }
-      if (this.words[i + 1] === undefined) {
-        chains.set(this.words[i], [null]);
-      }
+      // if (this.words[i + 1] === undefined) {
+      //   chains.set(this.words[i], [null]);
+      // }
     }
     return chains;
 
@@ -54,34 +58,35 @@ class MarkovMachine {
   /** Return random text from chains, starting at the first word and continuing
    *  until it hits a null choice. */
 
-  // getText() {
+  getText() {
 
-  //   // - start at the first word in the input text
-  //   // - find a random word from the following-words of that
-  //   // - repeat until reaching the terminal null
+    // - start at the first word in the input text
+    // - find a random word from the following-words of that
+    // - repeat until reaching the terminal null
 
-  //   //start with "The"
-  //   let resultText = [];
-  //   resultText.push(this.words[0]);
 
-  //   //get random number that is smaller than the length of an array
-  //   // apply that random number to get a random word out of the array
-  //   //take the word taken from the array and use it as a key for the map to get its value
-  //   //do the same thing until null
-  //   let randomWord = "";
-  //   while (randomWord !== null) {
-  //     debugger;
-  //     randomWord = _.sample(this.chains.get(resultText[resultText.length - 1]));
-  //     resultText.push(randomWord);
-  //   }
-  //   return resultText.join(" ");
+    let resultText = [];
+    resultText.push(this.words[0]);
 
-  // }
+
+    let randomWord = "";
+    while (randomWord !== null) {
+
+      randomWord = sample(this.chains.get(resultText[resultText.length - 1]));
+      resultText.push(randomWord);
+    }
+    return resultText.join(" ");
+
+  }
 }
 
-const sampleText = "The cat is in the hat. The cat is the cat. The hat is a cat.";
+// const sampleText = "The cat is in the hat. The cat is the cat. The hat is a cat.";
 
-const testMarkov = new MarkovMachine(sampleText);
-console.log(testMarkov.words);
-console.log(testMarkov.getChains());
+// const testMarkov = new MarkovMachine(sampleText);
+// console.log(testMarkov.words);
+// console.log(testMarkov.getChains());
 // testMarkov.getText();
+
+module.exports = {
+  MarkovMachine
+}
